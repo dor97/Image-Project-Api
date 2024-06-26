@@ -1,0 +1,32 @@
+version: '3'
+
+#networks:
+#  mynetwork:
+#    driver: bridge
+#    ipam:
+#      config:
+#        - subnet: 172.19.0.0/16 # Define a subnet for the network
+#          gateway: 172.19.0.1 # Define a gateway for the network
+
+services:
+  super-sicret-project:
+    build: ./superSicretProject
+    ports:
+      - "8000:8000"
+    #    networks:
+    #      mynetwork:
+    #        ipv4_address: 172.19.0.5
+    # Add other configurations as needed
+    #depends_on:
+    #  - container2 # Ensure container2 is started before container1
+
+  projec-server:
+    build: .
+    ports:
+      - "8080:8080"
+    depends_on:
+      - super-sicret-project
+
+#    networks:
+#      mynetwork:
+#        ipv4_address: 172.19.0.4
