@@ -4,6 +4,7 @@ using projectServer.Models;
 using System.ComponentModel.DataAnnotations;
 using System.IO;
 using static System.Net.Mime.MediaTypeNames;
+using Microsoft.Extensions.Logging;
 
 namespace projectServer.Controllers
 {
@@ -11,12 +12,20 @@ namespace projectServer.Controllers
     [Route("api/getsocre")]
     public class GetSocreController : ControllerBase
     {
+        private readonly ILogger<GetSocreController> _logger;
+
+        public GetSocreController(ILogger<GetSocreController> logger)
+        {
+            _logger = logger;
+        }
+
         [HttpPost]
         public async Task<IActionResult> getSocreForImage(ImageUploadDto imageUploadDto)
         {
             if (imageUploadDto == null || imageUploadDto.sampleImage == null || 
                 !imageUploadDto.sampleImage.Headers.ContentType.ToString().Contains("image"))
             {
+                _logger.LogError("No image sent in form");
                 return BadRequest("No image sent in form");
             }
 
@@ -39,6 +48,8 @@ namespace projectServer.Controllers
                     HttpResponseMessage response = await client.PostAsync(url, content);
 
                     string responseBody = await response.Content.ReadAsStringAsync();
+
+                    _logger.LogInformation($"result: {responseBody}");
 
                     return Ok(responseBody);
                 }

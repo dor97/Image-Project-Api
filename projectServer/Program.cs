@@ -3,6 +3,7 @@ using Microsoft.Extensions.Configuration;
 using projectServer;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 
 
 namespace server
@@ -32,13 +33,28 @@ namespace server
 
         public static IHostBuilder CreateHostBuilder(IConfiguration configuration)
         {
+            var url = configuration.GetValue<string>("WebHostListenUrl");
 
             return Host.CreateDefaultBuilder()
+                .ConfigureLogging(logging =>
+                {
+                    logging.ClearProviders();
+                    //logging.AddConsole();
+                    logging.AddConsole(options =>
+                    {
+                        options.FormatterName = "custom";
+                    });
+                    logging.AddConsoleFormatter<CustomConsoleFormatter, CustomConsoleFormatterOptions>(options =>
+                    {
+                        options.TimestampFormat = "yyyy-MM-dd HH:mm:ss.fff";
+                        options.CustomPrefix = "Log: ";
+                    });
+                })
                 //.UseSerilog()
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
                     webBuilder.UseStartup<Startup>()
-                    .UseUrls("http://localhost:8080");
+                    .UseUrls(url);
                     //.UseEnvironment();
                 });
         }
