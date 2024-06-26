@@ -1,0 +1,4 @@
+[submodule "Image-scoring-model-for-project"]
+	path = Image-scoring-model-for-project
+	url = https://github.com/dor97/Image-scoring-model-for-project.git
+	branch = main
