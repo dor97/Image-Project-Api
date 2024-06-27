@@ -10,7 +10,7 @@ version: '3'
 
 services:
   super-sicret-project:
-    build: ./superSicretProject
+    build: ./Image-scoring-model-for-project
     ports:
       - "8000:8000"
     #    networks:
