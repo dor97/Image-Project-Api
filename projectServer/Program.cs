@@ -5,7 +5,6 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 
-
 namespace server
 {
     public class Program
@@ -53,7 +52,7 @@ namespace server
                 //.UseSerilog()
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
-                    webBuilder.UseStartup<Startup>()
+                    webBuilder.UseStartup<Startup>()                   
                     .UseUrls(url);
                     //.UseEnvironment();
                 });

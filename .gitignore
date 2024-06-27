@@ -1,3 +1,4 @@
 /.vs
 /projectServer/bin/Debug
 /projectServer/obj
+/projectServer/bin/Release

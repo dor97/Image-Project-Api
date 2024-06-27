@@ -22,6 +22,8 @@ namespace projectServer.Controllers
         [HttpPost]
         public async Task<IActionResult> getSocreForImage(ImageUploadDto imageUploadDto)
         {
+            _logger.LogInformation("In get score for image method");
+
             if (imageUploadDto == null || imageUploadDto.sampleImage == null || 
                 !imageUploadDto.sampleImage.Headers.ContentType.ToString().Contains("image"))
             {
@@ -35,7 +37,7 @@ namespace projectServer.Controllers
             {
                 //client.DefaultRequestVersion = new Version(1, 1);
 
-                string url = "http://localhost:8000/test"; //localhost   /   super-sicret-project
+                string url = "http://super-sicret-project:8000/test"; //localhost   /   super-sicret-project
 
                 using (var content = new MultipartFormDataContent())
                 {
