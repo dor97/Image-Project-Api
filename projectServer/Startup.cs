@@ -13,7 +13,6 @@ namespace projectServer
         }
 
         //This method gets called by the runtime. Use this method to add services to the container.
-        //[Obsolete]
         public void ConfigureServices(IServiceCollection services)
         {
             //services.AddCors(options => options.AddPolicy("AllowAll", p => p.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader()));
@@ -21,7 +20,7 @@ namespace projectServer
             //services.AddEndpointsApiExplorer();           
             services.AddSwaggerGen(c =>
             {
-                c.SwaggerDoc("v1", new OpenApiInfo { Title = "My API", Version = "v1" });
+                c.SwaggerDoc("v1", new OpenApiInfo { Title = "My IMAGE PROJECT API", Version = "v1" });
             });
 
         }
@@ -54,11 +53,7 @@ namespace projectServer
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
-                //endpoints.MapHealthChecks("/health");
             });
-            
-            //app.UseHsts();
-
         }
     }
 }

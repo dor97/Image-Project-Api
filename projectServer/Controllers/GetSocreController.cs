@@ -35,7 +35,6 @@ namespace projectServer.Controllers
 
             using (HttpClient client = new HttpClient())
             {
-                //client.DefaultRequestVersion = new Version(1, 1);
 
                 string url = "http://super-sicret-project:8000/test"; //localhost   /   super-sicret-project
 
