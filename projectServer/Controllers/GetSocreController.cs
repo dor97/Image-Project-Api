@@ -20,7 +20,7 @@ namespace projectServer.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> getSocreForImage(ImageUploadDto imageUploadDto)
+        public async Task<ActionResult<ImageUploadDto>> getSocreForImage(ImageUploadDto imageUploadDto)
         {
             _logger.LogInformation("In get score for image method");
 
