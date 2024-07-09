@@ -5,6 +5,11 @@ namespace projectServer.Models
     public class ImageUploadModel
     {
         [Required]
-        public IFormFile? sampleImage { get; set; }
+        public IFormFile SampleImage { get; set; }
+
+        public ImageUploadModel(IFormFile sampleImage)
+        {
+            SampleImage = sampleImage;
+        }
     }
 }

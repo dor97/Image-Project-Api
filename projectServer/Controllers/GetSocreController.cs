@@ -5,11 +5,13 @@ using System.ComponentModel.DataAnnotations;
 using System.IO;
 using static System.Net.Mime.MediaTypeNames;
 using Microsoft.Extensions.Logging;
+using Microsoft.AspNetCore.Cors;
 
 namespace projectServer.Controllers
 {
     [ApiController]
     [Route("api/getsocre")]
+    [EnableCors("AllowSpecificOrigin")]
     public class GetSocreController : ControllerBase
     {
         private readonly ILogger<GetSocreController> _logger;
@@ -36,23 +38,32 @@ namespace projectServer.Controllers
             using (HttpClient client = new HttpClient())
             {
 
-                string url = "http://super-sicret-project:8000/test"; //localhost   /   super-sicret-project
+                string url = "http://localhost:8000/test"; //localhost   /   super-sicret-project
 
                 using (var content = new MultipartFormDataContent())
                 {
-                    StreamContent imageContent = new StreamContent(imageUploadModel.sampleImage.OpenReadStream());
+                    StreamContent imageContent = new StreamContent(imageUploadModel.SampleImage.OpenReadStream());
                     //imageContent.Headers.ContentType = System.Net.Http.Headers.MediaTypeHeaderValue();
 
                     // Add the stream content to the multipart content with a specified form field name
-                    content.Add(imageContent, "file", imageUploadModel.sampleImage.FileName);
+                    content.Add(imageContent, "file", imageUploadModel.SampleImage.FileName);
 
-                    HttpResponseMessage response = await client.PostAsync(url, content);
+                    try
+                    {
+                        HttpResponseMessage response = await client.PostAsync(url, content);
 
-                    string responseBody = await response.Content.ReadAsStringAsync();
+                        string responseBody = await response.Content.ReadAsStringAsync();
 
-                    _logger.LogInformation($"result: {responseBody}");
+                        _logger.LogInformation($"result: {responseBody}");
 
-                    return Ok(responseBody);
+                        return Ok(responseBody);
+                    }
+                    catch (Exception ex)
+                    {
+                        _logger.LogError($"Error in getting image score from model: {ex.Message}");
+
+                        return StatusCode(500, "Sorry: there is a problem with the server!");
+                    }
                 }
             }
         }

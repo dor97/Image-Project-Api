@@ -8,9 +8,9 @@ namespace projectServer
     {
         public static ImageUploadModel imageUploadDtoToModel(this ImageUploadDto imageUploadDto)
         {
-            ImageUploadModel imageUploadModel = new ImageUploadModel();
+            ImageUploadModel imageUploadModel = new ImageUploadModel(imageUploadDto.sampleImage);
 
-            imageUploadModel.sampleImage = imageUploadDto.sampleImage;
+            //imageUploadModel.SampleImage = imageUploadDto.sampleImage;
 
             return imageUploadModel;
         }

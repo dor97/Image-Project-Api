@@ -23,6 +23,17 @@ namespace projectServer
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "My IMAGE PROJECT API", Version = "v1" });
             });
 
+            services.AddCors(options =>
+            {
+                options.AddPolicy("AllowSpecificOrigin",
+                    builder =>
+                    {
+                        builder.WithOrigins("http://localhost:3000")
+                               .AllowAnyHeader()
+                               .AllowAnyMethod();
+                    });
+            });
+
         }
 
         //This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -41,12 +52,13 @@ namespace projectServer
                     c.SwaggerEndpoint("/swagger/v1/swagger.json", "My API V1");
                     //c.RoutePrefix = string.Empty; // To serve the Swagger UI at the app's root (http://localhost:<port>/)
                 });
-            }
+            }            
 
             //app.UseHttpsRedirection();
 
             app.UseRouting();
 
+            app.UseCors("AllowSpecificOrigin");
             app.UseAuthorization();
             app.UseAuthentication();
 
