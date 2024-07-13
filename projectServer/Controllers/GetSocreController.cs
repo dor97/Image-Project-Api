@@ -47,7 +47,6 @@ namespace projectServer.Controllers
                 results.Add(imageDataDto);
             }
 
-
             return Ok(results);          
         }
 
@@ -137,6 +136,44 @@ namespace projectServer.Controllers
 
                 return StatusCode(500, "Sorry: there is a problem with the server!");
             }
+        }
+
+        [HttpPut]
+        [Route("{id}")]
+        public async Task<IActionResult> upadte([FromRoute] int id, [FromBody] ImageUpdateDto imageUpdateDto)
+        {
+            SampleImageModel sampleImageModel = await _applicationDBContext.ImagesUpload.FirstOrDefaultAsync(x => x.Id == id);
+
+            if (sampleImageModel == null)
+            {
+                return NotFound();
+            }
+
+            //sampleImageModel.UserName = imageUpdateDto.UserName;
+            sampleImageModel.date = imageUpdateDto.date;
+            sampleImageModel.Score = imageUpdateDto.Score;
+
+            await _applicationDBContext.SaveChangesAsync();
+
+            return Ok(sampleImageModel.sampleImageModelToImageDataDto(_configuration.GetValue<string>("WebHostUrl")));
+        }
+
+        [HttpDelete]
+        [Route("{id}")]
+        public async Task<IActionResult> delete([FromRoute] int id)
+        {
+            SampleImageModel sampleImageModel = await _applicationDBContext.ImagesUpload.FirstOrDefaultAsync(x => x.Id == id);
+
+            if (sampleImageModel == null)
+            {
+                return NotFound();
+            }
+
+            _applicationDBContext.ImagesUpload.Remove(sampleImageModel);
+
+            await _applicationDBContext.SaveChangesAsync();
+
+            return NoContent();
         }
     }
 }
