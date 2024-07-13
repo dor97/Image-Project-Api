@@ -5,3 +5,4 @@
 [submodule "Scoring-Server-Front"]
 	path = Scoring-Server-Front
 	url = https://github.com/dor97/Scoring-Server-Front.git
+	branch = main
