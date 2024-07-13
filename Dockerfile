@@ -6,6 +6,10 @@ WORKDIR /app
 EXPOSE 8080
 EXPOSE 8081
 
+ENV ASPNETCORE_ENVIRONMENT=Production
+# Copy wait-for-it.sh
+COPY wait-for-it.sh /usr/bin/
+
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src

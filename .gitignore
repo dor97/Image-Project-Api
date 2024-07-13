@@ -2,3 +2,7 @@
 /projectServer/bin/Debug
 /projectServer/obj
 /projectServer/bin/Release
+/projectServer/uploads
+/*.bak
+/projectServer/Migrations/
+/projectServer/appsettings.Production.json

@@ -6,9 +6,14 @@ namespace server
     {
         public static void Main(string[] args)
         {
+            DotNetEnv.Env.Load();
+            string environment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? "Production";
+            Console.WriteLine(environment);
+
             IConfigurationRoot configuration = new ConfigurationBuilder()
                 .SetBasePath(Directory.GetCurrentDirectory())
                 .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
+                .AddJsonFile($"appsettings.{environment}.json", optional: true, reloadOnChange: true)
                 .AddEnvironmentVariables().Build();
 
             try
@@ -21,7 +26,7 @@ namespace server
             }
             finally
             {
-
+                
             }
         }
 
@@ -47,7 +52,8 @@ namespace server
                 //.UseSerilog()
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
-                    webBuilder.UseStartup<Startup>()                   
+                    webBuilder.UseStartup<Startup>()
+                    .UseConfiguration(configuration)
                     .UseUrls(url);
                     //.UseEnvironment();
                 });

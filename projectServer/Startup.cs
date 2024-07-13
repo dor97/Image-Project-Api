@@ -1,5 +1,10 @@
 ﻿using Microsoft.AspNetCore.Hosting;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Microsoft.OpenApi.Models;
+using projectServer.Data;
+using projectServer.Services;
+using projectServer.Services.Interfaces;
 
 namespace projectServer
 {
@@ -26,14 +31,19 @@ namespace projectServer
             services.AddCors(options =>
             {
                 options.AddPolicy("AllowSpecificOrigin",
-                    builder =>
-                    {
-                        builder.WithOrigins("http://localhost:3000")
+                builder =>
+                {
+                        builder.WithOrigins(Configuration.GetValue<string>("FrontUrl"))
                                .AllowAnyHeader()
                                .AllowAnyMethod();
                     });
             });
 
+            services.AddDbContext<ApplicationDBContext>(option => 
+                option.UseSqlServer(Configuration.GetConnectionString("DefaultConnection"))
+            );
+            
+            services.AddScoped<IImageService, ImageService>();
         }
 
         //This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -66,6 +76,11 @@ namespace projectServer
             {
                 endpoints.MapControllers();
             });
+
+            if (Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == "Production")
+            {
+                PrebDB.PrepPopulation(app);
+            }               
         }
     }
 }

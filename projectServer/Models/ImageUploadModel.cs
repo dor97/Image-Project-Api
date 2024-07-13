@@ -6,10 +6,8 @@ namespace projectServer.Models
     {
         [Required]
         public IFormFile SampleImage { get; set; }
-
-        public ImageUploadModel(IFormFile sampleImage)
-        {
-            SampleImage = sampleImage;
-        }
+        public string UserName { get; set; } = "All";
+        public float Score { get; set; } = -1;
+        public DateTime date { get; set; }
     }
 }

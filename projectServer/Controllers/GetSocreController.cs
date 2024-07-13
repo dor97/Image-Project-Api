@@ -3,26 +3,72 @@ using projectServer.DTOs;
 using projectServer.Models;
 using System.ComponentModel.DataAnnotations;
 using System.IO;
-using static System.Net.Mime.MediaTypeNames;
 using Microsoft.Extensions.Logging;
 using Microsoft.AspNetCore.Cors;
+using projectServer.Services.Interfaces;
+using projectServer.Data;
+using Microsoft.EntityFrameworkCore;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace projectServer.Controllers
 {
     [ApiController]
-    [Route("api/getsocre")]
+    [Route("api/scoreimage")]
     [EnableCors("AllowSpecificOrigin")]
     public class GetSocreController : ControllerBase
     {
         private readonly ILogger<GetSocreController> _logger;
+        private readonly IImageService _imageService;
+        private readonly ApplicationDBContext _applicationDBContext;
+        private readonly IConfiguration _configuration;
 
-        public GetSocreController(ILogger<GetSocreController> logger)
+        public GetSocreController(ILogger<GetSocreController> logger, IImageService imageService, ApplicationDBContext aplicationDBContext,
+            IConfiguration configuration)
         {
             _logger = logger;
+            _imageService = imageService;
+            _applicationDBContext = aplicationDBContext;
+            _configuration = configuration;
         }
 
+        [HttpGet("{userName}")]
+        public async Task<ActionResult> GetAll([FromRoute] string userName)
+        {
+            IList<SampleImageModel> sampleImageModels = await _applicationDBContext.ImagesUpload
+                .Where(ImageSample => ImageSample.UserName == userName).ToListAsync();
+
+
+            var results = new List<ImageDataDto>();
+
+            foreach (var sampleImageModel in sampleImageModels)
+            {
+                ImageDataDto imageDataDto = sampleImageModel.sampleImageModelToImageDataDto(_configuration.GetValue<string>("WebHostUrl"));
+
+                results.Add(imageDataDto);
+            }
+
+
+            return Ok(results);          
+        }
+
+        [HttpGet("{userName}/{id}")]
+        public async Task<IActionResult> GetById([FromRoute] string userName, [FromRoute] int id)
+        {
+            SampleImageModel? sampleImageModel = await _applicationDBContext.ImagesUpload.FindAsync(id);
+
+            if(sampleImageModel == null)
+            {
+                return NotFound();
+            }
+
+            FileStream fileStream = _imageService.GetUserFile(sampleImageModel.ImagePath);
+           
+            return Ok(fileStream);
+        }
+
+
         [HttpPost]
-        public async Task<ActionResult<ImageUploadDto>> getSocreForImage(ImageUploadDto imageUploadDto)
+        public async Task<ActionResult<ImageDataDto>> postImage([FromForm]ImageUploadDto imageUploadDto)
         {
             _logger.LogInformation("In get score for image method");
 
@@ -35,36 +81,61 @@ namespace projectServer.Controllers
 
             ImageUploadModel imageUploadModel = imageUploadDto.imageUploadDtoToModel();
 
-            using (HttpClient client = new HttpClient())
+            try
             {
+                float score = await _imageService.GetImageScore(_configuration.GetValue<string>("ScoringApiUrl"), imageUploadModel);
 
-                string url = "http://localhost:8000/test"; //localhost   /   super-sicret-project
+                _logger.LogInformation($"result: {score}");
 
-                using (var content = new MultipartFormDataContent())
-                {
-                    StreamContent imageContent = new StreamContent(imageUploadModel.SampleImage.OpenReadStream());
-                    //imageContent.Headers.ContentType = System.Net.Http.Headers.MediaTypeHeaderValue();
+                imageUploadModel.Score = score;
 
-                    // Add the stream content to the multipart content with a specified form field name
-                    content.Add(imageContent, "file", imageUploadModel.SampleImage.FileName);
+                SampleImageModel sampleImageModel = await _imageService.saveImage(imageUploadModel);
 
-                    try
-                    {
-                        HttpResponseMessage response = await client.PostAsync(url, content);
+                await _applicationDBContext.ImagesUpload.AddAsync(sampleImageModel);
 
-                        string responseBody = await response.Content.ReadAsStringAsync();
+                await _applicationDBContext.SaveChangesAsync();
 
-                        _logger.LogInformation($"result: {responseBody}");
+                ImageDataDto imageDataDto = sampleImageModel.sampleImageModelToImageDataDto(_configuration.GetValue<string>("WebHostUrl"));
 
-                        return Ok(responseBody);
-                    }
-                    catch (Exception ex)
-                    {
-                        _logger.LogError($"Error in getting image score from model: {ex.Message}");
+                return Ok(imageDataDto);
+            }
+            catch(Exception ex)
+            {
+                _logger.LogError($"Error in getting image score from model: {ex.Message}");
 
-                        return StatusCode(500, "Sorry: there is a problem with the server!");
-                    }
-                }
+                return StatusCode(500, "Sorry: there is a problem with the server!");
+            }
+        }
+
+        [HttpPost("/NoSave")]
+        public async Task<ActionResult<ImageDataDto>> getSocreForImage([FromForm]ImageUploadDto imageUploadDto)
+        {
+            _logger.LogInformation("In get score for image method");
+
+            if (imageUploadDto == null || imageUploadDto.sampleImage == null ||
+                !imageUploadDto.sampleImage.Headers.ContentType.ToString().Contains("image"))
+            {
+                _logger.LogError("No image sent in form");
+                return BadRequest("No image sent in form");
+            }
+
+            ImageUploadModel imageUploadModel = imageUploadDto.imageUploadDtoToModel();
+
+            try
+            {
+                float score = await _imageService.GetImageScore(_configuration.GetValue<string>("ScoringApiUrl"), imageUploadModel);
+
+                _logger.LogInformation($"result: {score}");
+
+                imageUploadModel.Score = score;
+
+                return Ok(score);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error in getting image score from model: {ex.Message}");
+
+                return StatusCode(500, "Sorry: there is a problem with the server!");
             }
         }
     }
