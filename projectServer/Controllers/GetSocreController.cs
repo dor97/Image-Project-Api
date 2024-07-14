@@ -140,7 +140,7 @@ namespace projectServer.Controllers
 
         [HttpPut]
         [Route("{id}")]
-        public async Task<IActionResult> upadte([FromRoute] int id, [FromBody] ImageUpdateDto imageUpdateDto)
+        public async Task<IActionResult> upadte([FromRoute] int id, [FromForm] ImageUpdateDto imageUpdateDto)
         {
             SampleImageModel sampleImageModel = await _applicationDBContext.ImagesUpload.FirstOrDefaultAsync(x => x.Id == id);
 
