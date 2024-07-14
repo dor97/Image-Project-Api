@@ -6,3 +6,5 @@
 /*.bak
 /projectServer/Migrations/
 /projectServer/appsettings.Production.json
+/projectServer/.env
+/.env

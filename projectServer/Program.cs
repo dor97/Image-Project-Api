@@ -6,7 +6,7 @@ namespace server
     {
         public static void Main(string[] args)
         {
-            DotNetEnv.Env.Load();
+            //DotNetEnv.Env.Load();
             string environment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? "Production";
             Console.WriteLine(environment);
 

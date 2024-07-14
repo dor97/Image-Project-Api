@@ -10,7 +10,7 @@ services:
     image: mcr.microsoft.com/mssql/server:2022-latest
     environment:
       ACCEPT_EULA: "Y"
-      SA_PASSWORD: Pa55w0rd2022
+      SA_PASSWORD: ${SQL_PASSWORD}
       MSSQL_PID: "Express"
     ports:
       - "1433:1433"
@@ -22,6 +22,6 @@ services:
     depends_on:
       - super-sicret-project
       - ms-sql-server
-    command: ["/usr/bin/wait-for-it.sh", "ms-sql-server:1433", "-t", "30", "--", "dotnet", "projectServer.dll"]
+    command: ["/usr/bin/wait-for-it.sh", "ms-sql-server:1433", "-t", "120", "--", "dotnet", "projectServer.dll"]
     environment:
       - ASPNETCORE_ENVIRONMENT=Production
