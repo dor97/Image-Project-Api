@@ -181,6 +181,14 @@ namespace projectServer.Controllers
                 return NotFound();
             }
 
+            string username = User.GetUserName();
+            UserModel appUser = await _userManager.FindByNameAsync(username);
+
+            if(appUser.Id != sampleImageModel.UserId)
+            {
+                return Unauthorized();
+            }
+
             //sampleImageModel.UserName = imageUpdateDto.UserName;
             sampleImageModel.date = imageUpdateDto.date;
             sampleImageModel.Score = imageUpdateDto.Score;

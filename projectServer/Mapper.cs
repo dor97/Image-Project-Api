@@ -36,18 +36,5 @@ namespace projectServer
 
             return imageDataDto;
         }
-
-        public static SampleImageModel ImageUpdateDtoToSampleImageModel(ImageUpdateDto imageUpdateDto)
-        {
-            SampleImageModel sampleImageModel = new SampleImageModel()
-            {
-                Id = imageUpdateDto.Id,
-                UserName = imageUpdateDto.UserName,
-                Score = imageUpdateDto.Score,
-                date = imageUpdateDto.date
-            };
-
-            return sampleImageModel;
-        }
     }
 }
