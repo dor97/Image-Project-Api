@@ -1,4 +1,4 @@
-﻿using projectServer.Models;
+﻿using projectServer.Models.Image;
 
 namespace projectServer.Services.Interfaces
 {

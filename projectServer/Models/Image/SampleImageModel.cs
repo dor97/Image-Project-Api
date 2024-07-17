@@ -1,4 +1,4 @@
-﻿namespace projectServer.Models
+﻿namespace projectServer.Models.Image
 {
     public class SampleImageModel
     {
@@ -7,5 +7,6 @@
         public string UserName { get; set; } = string.Empty;
         public float Score { get; set; }
         public DateTime date { get; set; }
+        public string UserId { get; set; }
     }
 }

@@ -1,4 +1,4 @@
-﻿namespace projectServer.DTOs
+﻿namespace projectServer.DTOs.Image
 {
     public class ImageUpdateDto
     {

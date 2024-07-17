@@ -1,17 +1,20 @@
-﻿using projectServer.DTOs;
-using projectServer.Models;
+﻿using projectServer.DTOs.Image;
+using projectServer.DTOs.Account;
 using System.Runtime.CompilerServices;
+using projectServer.Models.Image;
+using projectServer.Models.Account;
 
 namespace projectServer
 {
     public static class Mapper
     {
-        public static ImageUploadModel imageUploadDtoToModel(this ImageUploadDto imageUploadDto)
+        public static ImageUploadModel imageUploadDtoToModel(this ImageUploadDto imageUploadDto, UserModel appUser)
         {
             ImageUploadModel imageUploadModel = new ImageUploadModel()
             {
                 SampleImage = imageUploadDto.sampleImage,
-                UserName = imageUploadDto.UserName,
+                UserName = appUser?.UserName ?? "",
+                userId = appUser?.Id ?? "",
                 date = imageUploadDto.date
             };
 
@@ -25,7 +28,7 @@ namespace projectServer
             ImageDataDto imageDataDto = new ImageDataDto()
             {
                 id = sampleImageModel.Id,
-                ImageUrl = $"{Url}/api/scoreimage/{sampleImageModel.UserName}/{sampleImageModel.Id}",
+                ImageUrl = $"{Url}/api/scoreimage/{sampleImageModel.Id}",
                 UserName = sampleImageModel.UserName,
                 Score = sampleImageModel.Score,
                 date = sampleImageModel.date

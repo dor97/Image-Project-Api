@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using System.IO;
 
-namespace projectServer.DTOs
+namespace projectServer.DTOs.Image
 {
     public class ImageDataDto
     {

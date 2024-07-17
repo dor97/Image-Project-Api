@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using projectServer.DTOs;
-using projectServer.Models;
+using projectServer.DTOs.Image;
 using System.ComponentModel.DataAnnotations;
 using System.IO;
 using Microsoft.Extensions.Logging;
@@ -9,6 +8,12 @@ using projectServer.Services.Interfaces;
 using projectServer.Data;
 using Microsoft.EntityFrameworkCore;
 using static System.Runtime.InteropServices.JavaScript.JSType;
+using Microsoft.AspNetCore.Authorization;
+using System.Security.Claims;
+using api.Extensions;
+using Microsoft.AspNetCore.Identity;
+using projectServer.Models.Image;
+using projectServer.Models.Account;
 
 namespace projectServer.Controllers
 {
@@ -21,21 +26,28 @@ namespace projectServer.Controllers
         private readonly IImageService _imageService;
         private readonly ApplicationDBContext _applicationDBContext;
         private readonly IConfiguration _configuration;
+        private readonly UserManager<UserModel> _userManager;
 
         public GetSocreController(ILogger<GetSocreController> logger, IImageService imageService, ApplicationDBContext aplicationDBContext,
-            IConfiguration configuration)
+            IConfiguration configuration, UserManager<UserModel> userManager)
         {
             _logger = logger;
             _imageService = imageService;
             _applicationDBContext = aplicationDBContext;
             _configuration = configuration;
+            _userManager = userManager;
         }
 
-        [HttpGet("{userName}")]
-        public async Task<ActionResult> GetAll([FromRoute] string userName)
+        [HttpGet]
+        [Authorize]
+        public async Task<ActionResult> GetAll()
         {
+            string username = User.GetUserName();
+            UserModel appUser = await _userManager.FindByNameAsync(username);
             IList<SampleImageModel> sampleImageModels = await _applicationDBContext.ImagesUpload
-                .Where(ImageSample => ImageSample.UserName == userName).ToListAsync();
+                .Where(u => u.UserId == appUser.Id).ToListAsync();            
+            //IList<SampleImageModel> sampleImageModels = await _applicationDBContext.ImagesUpload
+            //    .Where(ImageSample => ImageSample.UserName == userName).ToListAsync();
 
 
             var results = new List<ImageDataDto>();
@@ -50,12 +62,12 @@ namespace projectServer.Controllers
             return Ok(results);          
         }
 
-        [HttpGet("{userName}/{id}")]
-        public async Task<IActionResult> GetById([FromRoute] string userName, [FromRoute] int id)
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetById([FromRoute] int id)
         {
             SampleImageModel? sampleImageModel = await _applicationDBContext.ImagesUpload.FindAsync(id);
 
-            if(sampleImageModel == null)
+            if (sampleImageModel == null)
             {
                 return NotFound();
             }
@@ -67,6 +79,7 @@ namespace projectServer.Controllers
 
 
         [HttpPost]
+        [Authorize]
         public async Task<ActionResult<ImageDataDto>> postImage([FromForm]ImageUploadDto imageUploadDto)
         {
             _logger.LogInformation("In get score for image method");
@@ -78,7 +91,10 @@ namespace projectServer.Controllers
                 return BadRequest("No image sent in form");
             }
 
-            ImageUploadModel imageUploadModel = imageUploadDto.imageUploadDtoToModel();
+            string username = User.GetUserName();
+            UserModel appUser = await _userManager.FindByNameAsync(username);
+
+            ImageUploadModel imageUploadModel = imageUploadDto.imageUploadDtoToModel(appUser);
 
             try
             {
@@ -118,7 +134,7 @@ namespace projectServer.Controllers
                 return BadRequest("No image sent in form");
             }
 
-            ImageUploadModel imageUploadModel = imageUploadDto.imageUploadDtoToModel();
+            ImageUploadModel imageUploadModel = imageUploadDto.imageUploadDtoToModel(null);
 
             try
             {

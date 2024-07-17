@@ -1,4 +1,4 @@
-﻿using projectServer.Models;
+﻿using projectServer.Models.Image;
 using projectServer.Services.Interfaces;
 using static System.Net.Mime.MediaTypeNames;
 
@@ -38,6 +38,7 @@ namespace projectServer.Services
                 {
                     ImagePath = filePath,
                     UserName = imageUploadModel.UserName,
+                    UserId = imageUploadModel.userId,
                     Score = imageUploadModel.Score,
                     date = imageUploadModel.date
                 };
