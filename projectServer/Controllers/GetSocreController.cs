@@ -62,7 +62,7 @@ namespace projectServer.Controllers
             return Ok(results);          
         }
 
-        [HttpGet("{id}")]
+        [HttpGet("{id:int}")]
         public async Task<IActionResult> GetById([FromRoute] int id)
         {
             SampleImageModel? sampleImageModel = await _applicationDBContext.ImagesUpload.FindAsync(id);
@@ -83,6 +83,11 @@ namespace projectServer.Controllers
         public async Task<ActionResult<ImageDataDto>> postImage([FromForm]ImageUploadDto imageUploadDto)
         {
             _logger.LogInformation("In get score for image method");
+
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
 
             if (imageUploadDto == null || imageUploadDto.sampleImage == null || 
                 !imageUploadDto.sampleImage.Headers.ContentType.ToString().Contains("image"))
@@ -127,6 +132,11 @@ namespace projectServer.Controllers
         {
             _logger.LogInformation("In get score for image method");
 
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
             if (imageUploadDto == null || imageUploadDto.sampleImage == null ||
                 !imageUploadDto.sampleImage.Headers.ContentType.ToString().Contains("image"))
             {
@@ -155,9 +165,15 @@ namespace projectServer.Controllers
         }
 
         [HttpPut]
-        [Route("{id}")]
+        [Route("{id:int}")]
+        [Authorize]
         public async Task<IActionResult> upadte([FromRoute] int id, [FromForm] ImageUpdateDto imageUpdateDto)
         {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
             SampleImageModel sampleImageModel = await _applicationDBContext.ImagesUpload.FirstOrDefaultAsync(x => x.Id == id);
 
             if (sampleImageModel == null)
@@ -175,7 +191,8 @@ namespace projectServer.Controllers
         }
 
         [HttpDelete]
-        [Route("{id}")]
+        [Route("{id:int}")]
+        [Authorize]
         public async Task<IActionResult> delete([FromRoute] int id)
         {
             SampleImageModel sampleImageModel = await _applicationDBContext.ImagesUpload.FirstOrDefaultAsync(x => x.Id == id);
