@@ -46,9 +46,6 @@ namespace projectServer.Controllers
             UserModel appUser = await _userManager.FindByNameAsync(username);
             IList<SampleImageModel> sampleImageModels = await _applicationDBContext.ImagesUpload
                 .Where(u => u.UserId == appUser.Id).ToListAsync();            
-            //IList<SampleImageModel> sampleImageModels = await _applicationDBContext.ImagesUpload
-            //    .Where(ImageSample => ImageSample.UserName == userName).ToListAsync();
-
 
             var results = new List<ImageDataDto>();
 
@@ -189,7 +186,6 @@ namespace projectServer.Controllers
                 return Unauthorized();
             }
 
-            //sampleImageModel.UserName = imageUpdateDto.UserName;
             sampleImageModel.date = imageUpdateDto.date;
             sampleImageModel.Score = imageUpdateDto.Score;
 
